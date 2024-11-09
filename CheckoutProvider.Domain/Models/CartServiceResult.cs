@@ -1,6 +1,6 @@
 ﻿namespace CheckoutProvider.Domain.Models;
 
-public class CartServiceResult
+public class CartServiceResult : BaseResponseResult
 {
-    public string Success { get; set; } = null!;
+    public Cart? Result { get; set; }
 }

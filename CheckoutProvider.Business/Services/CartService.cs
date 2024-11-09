@@ -9,4 +9,9 @@ public class CartService : ICartService
     {
 
     }
+
+    public CartServiceResult CheckStock(CartRequest request)
+    {
+
+    }
 }
