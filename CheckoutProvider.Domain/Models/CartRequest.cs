@@ -6,7 +6,11 @@ public class CartRequest
 
     public string UserInfo { get; set; } = null!;
 
-    public string PickedProduct { get; set; } = null!;
+    public string ProductName { get; set; } = null!;
 
-    public int AmountOfProducts { get; set; }
+    public string ProductPrice { get; set; } = null!;
+
+    public int ProductAmount { get; set; }
+
+    public Product ExtractedProduct { get; set; } = null!;
 }

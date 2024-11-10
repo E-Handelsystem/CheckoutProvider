@@ -4,6 +4,6 @@ namespace CheckoutProvider.Business.Interfaces;
 
 public interface ICartService
 {
-    CartServiceResult CheckStock(CartRequest request);
+    CartRepositoryResult CheckStock(CartRequest request);
     CartServiceResult CreateCart(CartRequest request);
 }
