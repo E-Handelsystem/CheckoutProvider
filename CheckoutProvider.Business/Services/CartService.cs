@@ -1,38 +1,45 @@
 ﻿using CheckoutProvider.Business.Interfaces;
+using CheckoutProvider.Data.Interfaces;
+using CheckoutProvider.Domain.Factories;
 using CheckoutProvider.Domain.Models;
 
 namespace CheckoutProvider.Business.Services;
 
 public class CartService : ICartService
 {
+    private readonly ICartRepository _cartRepository;
+    private readonly CartFactory _cartFactory;
+
+    public CartService(ICartRepository cartRepository, CartFactory cartFactory)
+    {
+        _cartRepository = cartRepository;
+        _cartFactory = cartFactory;
+    }
+
     public CartServiceResult CreateCart(CartRequest request)
     {
-        var stockResult = CheckStock(request);
+        var stockResult = _cartRepository.CheckStock(request);
 
-        if (stockResult.Success == true)
+        if (stockResult.Success)
         {
             request.ExtractedProduct = stockResult.ExtractedProduct!;
-        }
-    }
+            var cartEntity = _cartFactory.Create(request);
 
-    public CartRepositoryResult CheckStock(CartRequest request)
-    {
-
-        //Returnar en CartRepositoryResult då jag inte kommer bygga funktionaliteten i CartRepository
-        return new CartRepositoryResult
-        {
-            Success = true,
-            StatusCodes = 200,
-            Message = "OK",
-            ExtractedProduct = new Product
+            if (cartEntity != null)
             {
-                Name = request.ProductName,
-                Price = request.ProductPrice,
-                Id = Guid.NewGuid().ToString()
+                var repositoryResult = _cartRepository.Save(cartEntity);
+
+                if (repositoryResult.Success)
+                {
+                    var cart = _cartFactory.Create(cartEntity);
+                    if (cart != null)
+                    {
+                        return new CartServiceResult { Success = true, Result = cart, Message = "OK", StatusCodes = 200 };
+                    }
+
+                }
             }
-        };
+        }
+        return new CartServiceResult { Success = false };
     }
-
-
-
 }

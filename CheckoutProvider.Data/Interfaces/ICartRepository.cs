@@ -2,7 +2,7 @@
 
 namespace CheckoutProvider.Data.Interfaces;
 
-internal interface ICartRepository
+public interface ICartRepository
 {
     public CartRepositoryResult CheckStock(CartRequest request);
 
