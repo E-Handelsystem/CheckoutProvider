@@ -2,5 +2,7 @@
 
 public class CartRepositoryResult : BaseResponseResult
 {
-    public Product? ExtractedProduct { get; set; }
+    public Product ExtractedProductObject { get; set; } = null!;
+
+    public List<Product>? ExtractedList { get; set; }
 }

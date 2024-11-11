@@ -22,8 +22,37 @@ public class CartService : ICartService
 
         if (stockResult.Success)
         {
-            request.ExtractedProduct = stockResult.ExtractedProduct!;
-            var cartEntity = _cartFactory.Create(request);
+            var product = stockResult.ExtractedProductObject;
+            var cartEntity = _cartFactory.Create(request, product);
+
+            if (cartEntity != null)
+            {
+                var repositoryResult = _cartRepository.Save(cartEntity);
+
+                if (repositoryResult.Success)
+                {
+                    var cart = _cartFactory.Create(cartEntity);
+                    if (cart != null)
+                    {
+                        return new CartServiceResult { Success = true, Result = cart, Message = "OK", StatusCodes = 200 };
+                    }
+
+                }
+            }
+        }
+        return new CartServiceResult { Success = false };
+    }
+
+    public CartServiceResult ManageCart(CartRequest request)
+    {
+        var stockResult = _cartRepository.CheckStock(request);
+
+        if (stockResult.Success)
+        {
+            var productObject = stockResult.ExtractedProductObject;
+            var productList = _cartRepository.AquireCartList(request.CartId!);
+
+            var cartEntity = _cartFactory.Manage(request, productObject, productList);
 
             if (cartEntity != null)
             {

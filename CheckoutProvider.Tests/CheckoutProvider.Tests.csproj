@@ -19,7 +19,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CheckoutProvider.Business\CheckoutProvider.Business.csproj" />
+    <ProjectReference Include="..\CheckoutProvider.Data\CheckoutProvider.Data.csproj" />
     <ProjectReference Include="..\CheckoutProvider.Domain\CheckoutProvider.Domain.csproj" />
+    <ProjectReference Include="..\CheckoutProvider.Presentation\CheckoutProvider.Presentation.csproj" />
   </ItemGroup>
 
   <ItemGroup>

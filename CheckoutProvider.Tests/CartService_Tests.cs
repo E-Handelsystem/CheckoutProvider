@@ -16,20 +16,20 @@ namespace CheckoutProvider.Tests
 
         public CartService_Tests()
         {
-            _service = new CartService(_mockCartRepository.Object, _cartFactory);
             _mockCartRepository = new Mock<ICartRepository>();
-            _cartFactory = new CartFactory();
+            _cartFactory = new();
+            _service = new CartService(_mockCartRepository.Object, _cartFactory);
         }
 
         [Fact]
         public void CreateCart_ShouldCreateCart_ReturnSuccess()
         {
             //Arrange
-            var request = new CartRequest { ProductName = "Keps", ProductPrice = "200", ProductAmount = 1, UserInfo = "The InZane" };
+            var request = new CartRequest { ProductName = "Keps", ProductPrice = "200", ProductAmount = 1, UserInfo = "Mr. Lewis" };
             var cartRepositoryResult = new CartRepositoryResult
             {
                 Success = true,
-                ExtractedProduct = new Product
+                ExtractedProductObject = new Product
                 {
                     Name = request.ProductName,
                     Price = request.ProductPrice,
@@ -44,6 +44,28 @@ namespace CheckoutProvider.Tests
 
             //Assert
             Assert.True(result.Success);
+            Assert.Equal(request.ProductName, result.Result.CartProducts.First().Name);
+        }
+
+        [Fact]
+        public void ManageCart_ShouldAddAProductToAnAlreadyExistingCart_ReturnSuccess()
+        {
+            var request = new CartRequest { ProductName = "Keps", ProductPrice = "200", ProductAmount = 1, UserInfo = "Mr. Lewis", CartId = Guid.NewGuid().ToString() };
+            var cartRepositoryResult = new CartRepositoryResult
+            {
+                Success = true,
+                ExtractedProductObject = new Product
+                {
+                    Name = request.ProductName,
+                    Price = request.ProductPrice,
+                    Id = Guid.NewGuid().ToString()
+                }
+            };
+            _mockCartRepository.Setup(x => x.CheckStock(It.IsAny<CartRequest>())).Returns(cartRepositoryResult);
+            _mockCartRepository.Setup(x => x.Save(It.IsAny<CartEntity>())).Returns(new CartRepositoryResult { Success = true });
+
+            //Act
+            var result = _service.ManageCart(request);
         }
     }
 }

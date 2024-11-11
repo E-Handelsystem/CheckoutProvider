@@ -6,5 +6,5 @@ public class Cart
 
     public string UserInfo { get; set; } = null!;
 
-    public List<Product> Products { get; set; } = null!;
+    public List<Product> CartProducts { get; set; } = null!;
 }

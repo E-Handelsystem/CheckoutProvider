@@ -11,6 +11,4 @@ public class CartRequest
     public string ProductPrice { get; set; } = null!;
 
     public int ProductAmount { get; set; }
-
-    public Product ExtractedProduct { get; set; } = null!;
 }

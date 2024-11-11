@@ -7,9 +7,9 @@ public class CartFactory
 
     private readonly List<Product> _products = [];
 
-    public CartEntity Create(CartRequest request)
+    public CartEntity Create(CartRequest request, Product productObject)
     {
-        AddProductToList(request);
+        AddProductToList(productObject);
 
         return new CartEntity
         {
@@ -27,18 +27,44 @@ public class CartFactory
         {
             CartId = entity.CartId,
             UserInfo = entity.UserInfo,
-            Products = entity.Products
+            CartProducts = entity.Products
         };
     }
 
-    public void AddProductToList(CartRequest request)
+    public CartEntity Manage(CartRequest request, Product productObject, List<Product> productList)
+    {
+        var updatedList = AddProductToList(productObject, productList);
+
+        return new CartEntity
+        {
+            CartId = request.CartId!,
+            UserInfo = request.UserInfo,
+            Products = updatedList,
+            CategoryName = Guid.NewGuid().ToString()
+
+        };
+    }
+
+    public void AddProductToList(Product productObject)
     {
         _products.Add(new Product
         {
-            Id = request.ExtractedProduct.Id,
-            Name = request.ExtractedProduct.Name,
-            Price = request.ExtractedProduct.Price
+            Id = productObject.Id,
+            Name = productObject.Name,
+            Price = productObject.Price
         });
 
+    }
+
+    public List<Product> AddProductToList(Product productObject, List<Product> productList)
+    {
+        productList.Add(new Product
+        {
+            Id = productObject.Id,
+            Name = productObject.Name,
+            Price = productObject.Price
+        });
+
+        return productList;
     }
 }

@@ -7,4 +7,6 @@ public interface ICartRepository
     public CartRepositoryResult CheckStock(CartRequest request);
 
     public CartRepositoryResult Save(CartEntity entity);
+
+    public CartRepositoryResult AquireCartList(string CartId);
 }

@@ -2,5 +2,5 @@
 
 public class CartServiceResult : BaseResponseResult
 {
-    public Cart? Result { get; set; }
+    public Cart Result { get; set; } = null!;
 }
