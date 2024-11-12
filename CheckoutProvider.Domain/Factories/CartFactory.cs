@@ -31,7 +31,7 @@ public class CartFactory
         };
     }
 
-    public CartEntity Manage(CartRequest request, Product productObject, List<Product> productList)
+    public CartEntity ManageCart(CartRequest request, Product productObject, List<Product> productList)
     {
         var updatedList = AddProductToList(productObject, productList);
 

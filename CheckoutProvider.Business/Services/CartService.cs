@@ -52,7 +52,7 @@ public class CartService : ICartService
             var productObject = stockResult.ExtractedProductObject;
             var productList = _cartRepository.AquireCartList(request.CartId!);
 
-            var cartEntity = _cartFactory.Manage(request, productObject, productList);
+            var cartEntity = _cartFactory.ManageCart(request, productObject, productList.ExtractedList!);
 
             if (cartEntity != null)
             {
