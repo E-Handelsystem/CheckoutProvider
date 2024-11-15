@@ -10,5 +10,7 @@ public class CartRequest
 
     public string ProductPrice { get; set; } = null!;
 
+    public string? ProductId { get; set; }
+
     public int ProductAmount { get; set; }
 }

@@ -48,10 +48,12 @@ namespace CheckoutProvider.Tests
         }
 
         [Fact]
-        public void ManageCart_ShouldAddAProductToAnAlreadyExistingCart_ReturnSuccess()
+        public void ManageCart_ShouldAddAnotherProductToAnAlreadyExistingCart_ReturnSuccess()
         {
-
             //Arrange
+
+            var request = new CartRequest { ProductName = "Keps", ProductPrice = "200", ProductAmount = 1, UserInfo = "Mr. Lewis", CartId = Guid.NewGuid().ToString() };
+
             List<Product> _cartList = [];
             _cartList.Add(new Product
             {
@@ -60,7 +62,7 @@ namespace CheckoutProvider.Tests
                 Id = Guid.NewGuid().ToString()
 
             });
-            var request = new CartRequest { ProductName = "Keps", ProductPrice = "200", ProductAmount = 1, UserInfo = "Mr. Lewis", CartId = Guid.NewGuid().ToString() };
+
             var cartRepositoryResult = new CartRepositoryResult
             {
                 Success = true,
@@ -73,17 +75,54 @@ namespace CheckoutProvider.Tests
                 ExtractedList = _cartList
             };
 
+            //Returnar sammma object (cartResultResultat) två gånger då jag är lat och då det inte är ett riktigt project, där jag annars inte hade gjort på detta sätt.
             _mockCartRepository.Setup(x => x.CheckStock(It.IsAny<CartRequest>())).Returns(cartRepositoryResult);
             _mockCartRepository.Setup(x => x.Save(It.IsAny<CartEntity>())).Returns(new CartRepositoryResult { Success = true });
             _mockCartRepository.Setup(x => x.AquireCartList(It.IsAny<string>())).Returns(cartRepositoryResult);
 
             //Act
-            var result = _service.ManageCart(request);
+            var result = _service.AddProductToCartList(request);
 
             //Assert
             Assert.True(result.Success);
             Assert.True(result.Result.CartProducts.Count() == 2);
             Assert.True(request.CartId == result.Result.CartId);
+        }
+
+        [Fact]
+
+        public void DeleteProductFromCart_ShouldDeleteProductFromAnExistingCart_ReturnSuccess()
+        {
+            //Arrange
+            List<Product> _cartList = [];
+            _cartList.Add(new Product
+            {
+                Name = "Leksak",
+                Price = "300",
+                Id = Guid.NewGuid().ToString()
+
+            });
+
+            var request = new CartRequest
+            {
+                ProductName = "Leksak",
+                ProductPrice = "300",
+                ProductAmount = 1,
+                UserInfo = "Mr. Lewis",
+                CartId = Guid.NewGuid().ToString(),
+                ProductId = _cartList.First().Id
+            };
+
+            var cartRepositoryResult = new CartRepositoryResult { ExtractedList = _cartList };
+            _mockCartRepository.Setup(x => x.Save(It.IsAny<CartEntity>())).Returns(new CartRepositoryResult { Success = true });
+            _mockCartRepository.Setup(x => x.AquireCartList(It.IsAny<string>())).Returns(cartRepositoryResult);
+
+            //Act
+            var result = _service.DeleteProductFromCartList(request);
+
+            //Assert
+            Assert.True(result.Success);
+            Assert.True(result.Result.CartProducts.Count() == 0);
         }
     }
 }

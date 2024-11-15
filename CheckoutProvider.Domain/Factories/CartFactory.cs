@@ -31,9 +31,9 @@ public class CartFactory
         };
     }
 
-    public CartEntity ManageCart(CartRequest request, Product productObject, List<Product> productList)
+    public CartEntity ManageCart(CartRequest request, Product productObject, List<Product> oldCartList)
     {
-        var updatedList = AddProductToList(productObject, productList);
+        var updatedList = AddProductToList(productObject, oldCartList);
 
         return new CartEntity
         {
@@ -41,7 +41,19 @@ public class CartFactory
             UserInfo = request.UserInfo,
             Products = updatedList,
             CategoryName = Guid.NewGuid().ToString()
+        };
+    }
 
+    public CartEntity ManageCartDelete(CartRequest request, List<Product> oldCartList)
+    {
+        var updatedList = DeleteProductFromList(request.ProductId!, oldCartList);
+
+        return new CartEntity
+        {
+            CartId = request.CartId!,
+            UserInfo = request.UserInfo,
+            Products = updatedList,
+            CategoryName = Guid.NewGuid().ToString()
         };
     }
 
@@ -65,6 +77,12 @@ public class CartFactory
             Price = productObject.Price
         });
 
+        return productList;
+    }
+
+    public List<Product> DeleteProductFromList(string productId, List<Product> productList)
+    {
+        productList.RemoveAll(x => x.Id.Equals(productId));
         return productList;
     }
 }

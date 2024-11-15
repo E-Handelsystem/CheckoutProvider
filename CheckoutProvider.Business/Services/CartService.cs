@@ -18,14 +18,14 @@ public class CartService : ICartService
 
     public CartServiceResult CreateCart(CartRequest request)
     {
-        var stockResult = _cartRepository.CheckStock(request);
+        var checkStockResult = _cartRepository.CheckStock(request);
 
-        if (stockResult.Success)
+        if (checkStockResult.Success)
         {
-            var product = stockResult.ExtractedProductObject;
+            var product = checkStockResult.ExtractedProductObject;
             var cartEntity = _cartFactory.Create(request, product);
 
-            if (cartEntity != null)
+            if (cartEntity != null && product != null)
             {
                 var repositoryResult = _cartRepository.Save(cartEntity);
 
@@ -43,18 +43,18 @@ public class CartService : ICartService
         return new CartServiceResult { Success = false };
     }
 
-    public CartServiceResult ManageCart(CartRequest request)
+    public CartServiceResult AddProductToCartList(CartRequest request)
     {
-        var stockResult = _cartRepository.CheckStock(request);
+        var checkStockResult = _cartRepository.CheckStock(request);
 
-        if (stockResult.Success)
+        if (checkStockResult.Success)
         {
-            var productObject = stockResult.ExtractedProductObject;
-            var productList = _cartRepository.AquireCartList(request.CartId!);
+            var productObject = checkStockResult.ExtractedProductObject;
+            var cartListBeforeAddingNewProduct = _cartRepository.AquireCartList(request.CartId!);
 
-            var cartEntity = _cartFactory.ManageCart(request, productObject, productList.ExtractedList!);
+            var cartEntity = _cartFactory.ManageCart(request, productObject, cartListBeforeAddingNewProduct.ExtractedList!);
 
-            if (cartEntity != null)
+            if (cartEntity != null && cartListBeforeAddingNewProduct.ExtractedList != null && productObject != null)
             {
                 var repositoryResult = _cartRepository.Save(cartEntity);
 
@@ -71,4 +71,28 @@ public class CartService : ICartService
         }
         return new CartServiceResult { Success = false };
     }
+
+    public CartServiceResult DeleteProductFromCartList(CartRequest request)
+    {
+        var cartListBeforeDelete = _cartRepository.AquireCartList(request.CartId!);
+        var cartEntity = _cartFactory.ManageCartDelete(request, cartListBeforeDelete.ExtractedList!);
+
+        if (cartEntity != null && cartListBeforeDelete.ExtractedList != null)
+        {
+            var repositoryResult = _cartRepository.Save(cartEntity);
+
+            if (repositoryResult.Success)
+            {
+                var cart = _cartFactory.Create(cartEntity);
+                if (cart != null)
+                {
+                    return new CartServiceResult { Success = true, Result = cart, Message = "OK", StatusCodes = 200 };
+                }
+            }
+        }
+        return new CartServiceResult { Success = false };
+    }
+
 }
+
+
