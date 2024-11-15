@@ -7,4 +7,5 @@ public interface ICartService
     CartServiceResult CreateCart(CartRequest request);
     CartServiceResult AddProductToCartList(CartRequest request);
     CartServiceResult DeleteProductFromCartList(CartRequest request);
+    CartServiceResult ReduceAmountOfProduct(CartRequest request);
 }

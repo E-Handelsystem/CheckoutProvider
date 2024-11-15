@@ -51,8 +51,7 @@ public class CartService : ICartService
         {
             var productObject = checkStockResult.ExtractedProductObject;
             var cartListBeforeAddingNewProduct = _cartRepository.AquireCartList(request.CartId!);
-
-            var cartEntity = _cartFactory.ManageCart(request, productObject, cartListBeforeAddingNewProduct.ExtractedList!);
+            var cartEntity = _cartFactory.ManageCartAddNewProduct(request, productObject, cartListBeforeAddingNewProduct.ExtractedList!);
 
             if (cartEntity != null && cartListBeforeAddingNewProduct.ExtractedList != null && productObject != null)
             {
@@ -75,7 +74,7 @@ public class CartService : ICartService
     public CartServiceResult DeleteProductFromCartList(CartRequest request)
     {
         var cartListBeforeDelete = _cartRepository.AquireCartList(request.CartId!);
-        var cartEntity = _cartFactory.ManageCartDelete(request, cartListBeforeDelete.ExtractedList!);
+        var cartEntity = _cartFactory.ManageCartDeleteProduct(request, cartListBeforeDelete.ExtractedList!);
 
         if (cartEntity != null && cartListBeforeDelete.ExtractedList != null)
         {
@@ -93,6 +92,28 @@ public class CartService : ICartService
         return new CartServiceResult { Success = false };
     }
 
+    public CartServiceResult ReduceAmountOfProduct(CartRequest request)
+    {
+        var cartListBeforeReducedAmount = _cartRepository.AquireCartList(request.CartId!);
+        var cartEntity = _cartFactory.ManageCartDecreaseAmount(request, cartListBeforeReducedAmount.ExtractedList!);
+
+        if (cartEntity != null && cartListBeforeReducedAmount.ExtractedList != null)
+        {
+            var repositoryResult = _cartRepository.Save(cartEntity);
+
+            if (repositoryResult.Success)
+            {
+                var cart = _cartFactory.Create(cartEntity);
+                if (cart != null)
+                {
+                    return new CartServiceResult { Success = true, Result = cart, Message = "OK", StatusCodes = 200 };
+                }
+            }
+        }
+        return new CartServiceResult { Success = false };
+    }
 }
+
+
 
 

@@ -31,7 +31,7 @@ public class CartFactory
         };
     }
 
-    public CartEntity ManageCart(CartRequest request, Product productObject, List<Product> oldCartList)
+    public CartEntity ManageCartAddNewProduct(CartRequest request, Product productObject, List<Product> oldCartList)
     {
         var updatedList = AddProductToList(productObject, oldCartList);
 
@@ -44,7 +44,7 @@ public class CartFactory
         };
     }
 
-    public CartEntity ManageCartDelete(CartRequest request, List<Product> oldCartList)
+    public CartEntity ManageCartDeleteProduct(CartRequest request, List<Product> oldCartList)
     {
         var updatedList = DeleteProductFromList(request.ProductId!, oldCartList);
 
@@ -53,6 +53,26 @@ public class CartFactory
             CartId = request.CartId!,
             UserInfo = request.UserInfo,
             Products = updatedList,
+            CategoryName = Guid.NewGuid().ToString()
+        };
+    }
+
+    public CartEntity ManageCartDecreaseAmount(CartRequest request, List<Product> oldCartList)
+    {
+        var amountOfProductInList = NumberOfAProductInList(oldCartList, request.ProductId!);
+        var updatedCartList = oldCartList;
+
+        while (amountOfProductInList > request.ProductAmount)
+        {
+            DecreaseAmount(updatedCartList, request.ProductId!);
+            amountOfProductInList--;
+        }
+
+        return new CartEntity
+        {
+            CartId = request.CartId!,
+            UserInfo = request.UserInfo,
+            Products = updatedCartList,
             CategoryName = Guid.NewGuid().ToString()
         };
     }
@@ -83,6 +103,20 @@ public class CartFactory
     public List<Product> DeleteProductFromList(string productId, List<Product> productList)
     {
         productList.RemoveAll(x => x.Id.Equals(productId));
+        return productList;
+    }
+
+    public int NumberOfAProductInList(List<Product> products, string productId)
+    {
+        var amount = products.FindAll(x => x.Id.Equals(productId));
+
+        return amount.Count();
+    }
+
+    public List<Product> DecreaseAmount(List<Product> productList, string productId)
+    {
+        productList.Remove(productList.First(x => x.Id.Equals(productId)));
+
         return productList;
     }
 }

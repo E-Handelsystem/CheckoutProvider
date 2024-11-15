@@ -124,5 +124,35 @@ namespace CheckoutProvider.Tests
             Assert.True(result.Success);
             Assert.True(result.Result.CartProducts.Count() == 0);
         }
+
+        [Fact]
+        public void ReduceAmountOfProduct_ShouldReduceTheAmountOfAProductInTheCart_ReturnSuccess()
+        {
+            //Arrange
+            var request = new CartRequest
+            {
+                ProductName = "Leksak",
+                ProductPrice = "300",
+                ProductAmount = 1,
+                UserInfo = "Mr. Lewis",
+                CartId = Guid.NewGuid().ToString(),
+                ProductId = Guid.NewGuid().ToString()
+            };
+
+            List<Product> _cartList = [];
+            _cartList.Add(new Product { Name = "Leksak", Price = "300", Id = request.ProductId });
+            _cartList.Add(new Product { Name = "Leksak", Price = "300", Id = request.ProductId });
+
+            var cartRepositoryResult = new CartRepositoryResult { ExtractedList = _cartList };
+            _mockCartRepository.Setup(x => x.Save(It.IsAny<CartEntity>())).Returns(new CartRepositoryResult { Success = true });
+            _mockCartRepository.Setup(x => x.AquireCartList(It.IsAny<string>())).Returns(cartRepositoryResult);
+
+            //Act
+            var result = _service.ReduceAmountOfProduct(request);
+
+            //Assert
+            Assert.True(result.Success);
+            Assert.True(result.Result.CartProducts.Count() == 1);
+        }
     }
 }
