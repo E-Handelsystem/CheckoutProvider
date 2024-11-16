@@ -4,9 +4,9 @@ namespace CheckoutProvider.Business.Interfaces;
 
 public interface ICartService
 {
-    CartServiceResult CreateCart(CartRequest request);
+    CartServiceResult CreateANewCartAndAddProduct(CartRequest request);
     CartServiceResult AddProductToCartList(CartRequest request);
     CartServiceResult DeleteProductFromCartList(CartRequest request);
-    CartServiceResult ReduceAmountOfProduct(CartRequest request);
-    CartServiceResult IncreaseAmountOfProduct(CartRequest request);
+    CartServiceResult ReduceAmountOfProductInCartList(CartRequest request);
+    CartServiceResult IncreaseAmountOfProductInCartList(CartRequest request);
 }
