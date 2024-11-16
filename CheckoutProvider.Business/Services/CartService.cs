@@ -112,6 +112,33 @@ public class CartService : ICartService
         }
         return new CartServiceResult { Success = false };
     }
+
+    public CartServiceResult IncreaseAmountOfProduct(CartRequest request)
+    {
+        var checkStockResult = _cartRepository.CheckStock(request);
+
+        if (checkStockResult.Success && checkStockResult.AmountOfProductInStock >= request.ProductAmount)
+        {
+            var cartListBeforeIncreasedAmount = _cartRepository.AquireCartList(request.CartId!);
+            var cartEntity = _cartFactory.ManageCartIncreaseAmount(request, cartListBeforeIncreasedAmount.ExtractedList!);
+
+            if (cartEntity != null && cartListBeforeIncreasedAmount.ExtractedList != null)
+            {
+                var repositoryResult = _cartRepository.Save(cartEntity);
+
+                if (repositoryResult.Success)
+                {
+                    var cart = _cartFactory.Create(cartEntity);
+                    if (cart != null)
+                    {
+                        return new CartServiceResult { Success = true, Result = cart, Message = "OK", StatusCodes = 200 };
+                    }
+
+                }
+            }
+        }
+        return new CartServiceResult { Success = false };
+    }
 }
 
 

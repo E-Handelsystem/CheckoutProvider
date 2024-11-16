@@ -77,6 +77,27 @@ public class CartFactory
         };
     }
 
+    public CartEntity ManageCartIncreaseAmount(CartRequest request, List<Product> oldCartList)
+    {
+        var amountOfProductInList = NumberOfAProductInList(oldCartList, request.ProductId!);
+        var updatedCartList = oldCartList;
+
+        while (amountOfProductInList < request.ProductAmount)
+        {
+            IncreaseAmount(updatedCartList, request.ProductId!);
+            amountOfProductInList++;
+        }
+
+        return new CartEntity
+        {
+            CartId = request.CartId!,
+            UserInfo = request.UserInfo,
+            Products = updatedCartList,
+            CategoryName = Guid.NewGuid().ToString()
+        };
+
+    }
+
     public void AddProductToList(Product productObject)
     {
         _products.Add(new Product
@@ -116,6 +137,13 @@ public class CartFactory
     public List<Product> DecreaseAmount(List<Product> productList, string productId)
     {
         productList.Remove(productList.First(x => x.Id.Equals(productId)));
+
+        return productList;
+    }
+
+    public List<Product> IncreaseAmount(List<Product> productList, string productId)
+    {
+        productList.Add(productList.First(x => x.Id.Equals(productId)));
 
         return productList;
     }
